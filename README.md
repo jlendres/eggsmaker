@@ -15,7 +15,7 @@ I added only the following packages:
 
 Note: just install my `egg-of_debian-bookworm-colibri`.
 
-# Dources
+# Sources
 This is the repository of eggsmaker, to get this sources just: 
 
 `git clone https://github.com/pieroproietti/eggsmaker
