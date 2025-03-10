@@ -20,6 +20,11 @@ It is recommended, however to create yourself a [fork](https://github.com/pierop
 # start to develop
 Just run `bin/create_venv` from the root of the project and and follow the instructions.
 
+Activate virtual environment:
+```
+source venv_eggsmaker/bin/activate
+```
+
 Under `bin`, there are usefull scripts to `run`, `create-bin`, `create-deb`, etc. They must always be run from the root of the project and have a self-explanatory name.
 
 ## Create bin
