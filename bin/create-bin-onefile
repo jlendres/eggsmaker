@@ -32,8 +32,7 @@ rm ${PROGRAM}-0* -rf
 
 # build
 python -m nuitka \
-        --enable-plugins=pyside6 \
-        --include-qt-plugins=sensible \
+        --enable-plugin=tk-inter \
         --onefile \
         --standalone \
         src/${PROGRAM}.py 
