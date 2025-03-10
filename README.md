@@ -1,5 +1,7 @@
 # eggsmaker
-eggsmaker makes it easier to create customized images of your system.
+
+A project from [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
+
 
 ![icon](https://github.com/pieroproietti/pengui/raw/main/assets/pengui.png?raw=true)
 
