@@ -1,10 +1,11 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Categories=GNOME;GTK;Utility;
-Comment=penGUI take cure about the eggs!
-Encoding=UTF-8
-Exec=/opt/pengui/pengui.bin
-GenericName=PenGUI
-Icon=pengui
-Name=penGUI
+Version=1.0
+Name=Eggs Maker
+Comment=Aplicación para crear y gestionar imágenes ISO con Eggs
+Exec=/opt/eggsmaker/eggsmaker.bin
+Icon=/usr/share/pixmaps/eggsmaker.png
+Terminal=false
 Type=Application
+Categories=Utility;Development
+
