@@ -13,5 +13,6 @@ source venv_${PROGRAM}/bin/activate
 pip install customtkinter
 pip install nuitka
 
+clear
 echo "to activate venv use: source venv_${PROGRAM}/bin/activate"
 echo "to deactivate venv use: deactivate"
