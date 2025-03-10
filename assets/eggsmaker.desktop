@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Categories=GNOME;GTK;Utility;
+Comment=penGUI take cure about the eggs!
+Encoding=UTF-8
+Exec=/opt/pengui/pengui.bin
+GenericName=PenGUI
+Icon=pengui
+Name=penGUI
+Type=Application

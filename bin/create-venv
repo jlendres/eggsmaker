@@ -1,0 +1,15 @@
+#!/bin/bash 
+source bin/program
+cd ~/${PROGRAM}
+
+# Create virtual environment
+python3 -m venv venv_${PROGRAM}
+
+# Install dependencies
+source venv_${PROGRAM}/bin/activate
+
+# install packages
+pip install tkinter
+pip install customtkinter
+pip install nuitka
+#deactivate

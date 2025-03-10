@@ -1,0 +1,30 @@
+#!/bin/bash 
+source bin/program
+cd ~/${PROGRAM}
+
+# Pulizia
+rm ${PROGRAM}-0* -rf
+
+LOW_MEMORY=""
+if [ -f /sys/firmware/devicetree/base/model ]; then
+    MODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model)
+    if [[ "$MODEL" == *"Raspberry Pi"* ]]; then
+        #LOW_MEMORY="--low-memory"
+        LOW_MEMORY=""
+    fi
+fi
+
+
+# build
+echo building ${PROGRAM}
+#--onefile \
+python -m nuitka \
+  --enable-plugin=tk-inter \
+  --standalone \
+  ${LOW_MEMORY} \
+  src/${PROGRAM}.py 
+
+# pulizia
+rm ${PROGRAM}.build -rf
+#rm ${PROGRAM}.dist -rf
+#rm ${PROGRAM}.onefile-build -rf
