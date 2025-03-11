@@ -5,7 +5,9 @@ A project from [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
 
 ![icon](https://github.com/pieroproietti/pengui/raw/main/assets/pengui.png?raw=true)
 
-# Development prerequisites Debian bookworm
+# Development requisites
+
+## Debian
 
 I added only the following packages:
 
@@ -15,16 +17,18 @@ I added only the following packages:
 
 Note: just install my `egg-of_debian-bookworm-colibri`.
 
+
+## Arch
 Su Arch tkinter non è installato di default e va installato nel sistema:
 ```
 sudo pacman -S tk
 ```
 
+## Openmamba
 Su Openmamba `tkinter` non è presente di default e va installato nel sistema:
 ```
 sudo dnf install python3-tk python3-devel glibc-devel
 ```
-
 
 # Sources
 This is the repository of eggsmaker, to get this sources just: 
@@ -52,7 +56,14 @@ We are using [nuitka](https://nuitka.net/) **2.1.5** on [python](https://www.pyt
 
 `sudo apt install ccache patchelf`
 
-## Create Debian packages
+# Create Debian packages
+
+## Debian
+
 To create Debian packages we need to install [fpm](https://fpm.readthedocs.io/en/v1.15.1/). 
 
 First install ruby `sudo apt install ruby`, then with gem, install fpm.
+```
+./bin/create-bin
+./bin/create-deb
+```

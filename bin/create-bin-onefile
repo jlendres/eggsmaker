@@ -43,4 +43,4 @@ rm ${PROGRAM}.dist -rf
 rm ${PROGRAM}.onefile-build -rf
 
 # versioning
-mv ${PROGRAM}.bin ${PROGRAM_VERSION}${ARCHITECTURE}.bin
+# mv ${PROGRAM}.bin ${PROGRAM_VERSION}${ARCHITECTURE}.bin

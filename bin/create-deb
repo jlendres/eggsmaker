@@ -48,11 +48,15 @@ find fakeroot/usr/share -type f -exec chmod 644 -- {} +
 chmod +x fakeroot/opt/${PROGRAM}/${PROGRAM}.bin
 
 # crea /usr/bin/${PROGRAM}
-ln fakeroot/opt/${PROGRAM}/${PROGRAM}.bin fakeroot/usr/bin/${PROGRAM} 
+CURRENT=$(pwd)
+cd ./fakeroot/usr/bin
+ln -s ../../opt/${PROGRAM}/${PROGRAM}.bin ${PROGRAM}
+cd ${CURRENT}
 
 # Create the deb package
 fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
 
 # Clean up the fakeroot directory
 #rm "${PROGRAM}.dist" -rf
-# rm fakeroot -rf
+rm fakeroot -rf
+
