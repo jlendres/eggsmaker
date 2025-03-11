@@ -39,7 +39,6 @@ mkdir -p fakeroot/usr/bin
 # Copy the files into the fakeroot directory
 cp assets/${PROGRAM}.svg fakeroot/usr/share/icons/hicolor/scalable/apps/
 cp assets/${PROGRAM}.desktop fakeroot/usr/share/applications
-cp -P assets/${PROGRAM}.link fakeroot/usr/bin/${PROGRAM}
 cp -r ${PROGRAM}.dist/* fakeroot/opt/${PROGRAM}
 
 # Set the permissions for the copied files
@@ -48,9 +47,12 @@ find fakeroot/opt/${PROGRAM}/${PROGRAM}.bin -type d -exec chmod 755 -- {} +
 find fakeroot/usr/share -type f -exec chmod 644 -- {} +
 chmod +x fakeroot/opt/${PROGRAM}/${PROGRAM}.bin
 
+# crea /usr/bin/${PROGRAM}
+ln fakeroot/opt/${PROGRAM}/${PROGRAM}.bin fakeroot/usr/bin/${PROGRAM} 
+
 # Create the deb package
 fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
 
 # Clean up the fakeroot directory
 #rm "${PROGRAM}.dist" -rf
-rm fakeroot -rf
+# rm fakeroot -rf
