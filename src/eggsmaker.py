@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import subprocess
 import os
+import sys
 import threading
 import time
 from PIL import Image, ImageTk
@@ -10,11 +11,18 @@ BUTTON_WIDTH = 200  # Ancho fijo para los botones
 
 class EggsMakerApp:
     def __init__(self, root):
+        # percorso base (funziona sia in fase di sviluppo che dopo la compilazione)
+        if getattr(sys, 'frozen', False):
+            base_path = os.path.dirname(sys.executable)
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+
+
         self.root = root
         self.root.title("Eggs Maker")
 
         # Carica l'icona per Linux/macOS
-        icon_image = Image.open("./assets/eggsmaker.png")
+        icon_image = Image.open(os.path.join(base_path, "assets", "eggsmaker.png"))
         icon_photo = ImageTk.PhotoImage(icon_image)
         self.root.iconphoto(True, icon_photo)  # Imposta l'icona
 

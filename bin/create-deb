@@ -52,5 +52,5 @@ chmod +x fakeroot/opt/${PROGRAM}/${PROGRAM}.bin
 fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
 
 # Clean up the fakeroot directory
-rm "${PROGRAM}.dist" -rf
+#rm "${PROGRAM}.dist" -rf
 rm fakeroot -rf
