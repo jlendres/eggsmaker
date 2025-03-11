@@ -2,8 +2,12 @@
 
 A project from [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
 
-
 ![icon](https://github.com/pieroproietti/pengui/raw/main/assets/pengui.png?raw=true)
+
+`eggsmaker` è una GUI per `penguins-eggs`.
+Scritto dall'amico [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), è essenziale e funzionale. Non copre tutta le possibilità di eggs ma alla fine una GUI deve essere semplice ed intuibile.
+
+A me piace, spero piaccia a voi e ringrazio Jorge per il suo cimento.
 
 # Development requisites
 
@@ -56,7 +60,7 @@ We are using [nuitka](https://nuitka.net/) **2.1.5** on [python](https://www.pyt
 
 `sudo apt install ccache patchelf`
 
-# Create Debian packages
+# Packages
 
 ## Debian
 
