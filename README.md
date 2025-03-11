@@ -9,6 +9,8 @@ Scritto dall'amico [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), è ess
 
 A me piace, spero piaccia a voi e ringrazio Jorge per il suo cimento.
 
+![eggsmaker-running](/images/eggsmaker-running.png)
+
 # Development requisites
 
 ## Debian
