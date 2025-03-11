@@ -15,6 +15,11 @@ I added only the following packages:
 
 Note: just install my `egg-of_debian-bookworm-colibri`.
 
+Su Arch tkinter non è installato di default e va installato nel sistema:
+```
+sudo pacman -S tk
+```
+
 # Sources
 This is the repository of eggsmaker, to get this sources just: 
 

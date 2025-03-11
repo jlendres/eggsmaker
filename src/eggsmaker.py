@@ -3,6 +3,7 @@ import subprocess
 import os
 import threading
 import time
+from PIL import Image, ImageTk
 from tkinter import messagebox, simpledialog, filedialog
 
 BUTTON_WIDTH = 200  # Ancho fijo para los botones
@@ -11,6 +12,12 @@ class EggsMakerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Eggs Maker")
+
+        # Carica l'icona per Linux/macOS
+        icon_image = Image.open("./assets/eggsmaker.png")
+        icon_photo = ImageTk.PhotoImage(icon_image)
+        self.root.iconphoto(True, icon_photo)  # Imposta l'icona
+
         self.password = None
         self.eggs_path = self.detect_eggs_path()
         self.copying = False          # Para el cronómetro de copia
