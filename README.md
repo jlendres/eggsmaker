@@ -20,6 +20,12 @@ Su Arch tkinter non è installato di default e va installato nel sistema:
 sudo pacman -S tk
 ```
 
+Su Openmamba `tkinter` non è presente di default e va installato nel sistema:
+```
+sudo dnf install python3-tk
+```
+
+
 # Sources
 This is the repository of eggsmaker, to get this sources just: 
 
