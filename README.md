@@ -22,7 +22,7 @@ sudo pacman -S tk
 
 Su Openmamba `tkinter` non è presente di default e va installato nel sistema:
 ```
-sudo dnf install python3-tk
+sudo dnf install python3-tk python3-devel glibc-devel
 ```
 
 
