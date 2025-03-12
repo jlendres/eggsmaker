@@ -50,7 +50,7 @@ chmod +x fakeroot/opt/${PROGRAM}/${PROGRAM}.bin
 # crea /usr/bin/${PROGRAM}
 CURRENT=$(pwd)
 cd ./fakeroot/usr/bin
-ln -s ../../opt/${PROGRAM}/${PROGRAM}.bin ${PROGRAM}
+ln -s ../../opt/${PROGRAM}/${PROGRAM}.bin _${PROGRAM}
 cd ${CURRENT}
 
 # Create the deb package
