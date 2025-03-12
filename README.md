@@ -43,7 +43,7 @@ Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que tambi
 # Sources
 Este es el repositorio de eggsmaker, para obtener estas fuentes: 
 
-`git clone https://github.com/pieroproietti/eggsmaker
+`git clone https://github.com/pieroproietti/eggsmaker`
 
 Se recomienda, sin embargo, crear un [fork](https://github.com/pieroproietti/eggsmaker/fork) del repositorio, para que pueda gestionar el proyecto usted mismo y posiblemente crear algunas [Pull Requests](https://github.com/pieroproietti/eggsmaker/pulls).
 
