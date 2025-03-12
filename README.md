@@ -14,7 +14,7 @@ Me gusta, espero que os guste, y agradezco a Jorge su atrevimiento.
 
 ## Debian
 
-I added only the following packages:
+He añadido sólo los siguientes paquetes:
 
 `sudo apt install build-essential`
 
@@ -72,10 +72,12 @@ Para crear el ejecutable:
 # Create packages
 
 ## Debian
+Para crear paquetes Debian necesitamos instalar [fpm](https://fpm.readthedocs.io/en/v1.15.1/). 
 
-To create Debian packages we need to install [fpm](https://fpm.readthedocs.io/en/v1.15.1/). 
+Primero instala ruby `sudo apt install ruby`, luego usando gem, instala fpm.
 
-First install ruby `sudo apt install ruby`, then using gem, install fpm.
+Cree el ejecutable, luego cree el paquete deb:
+
 ```
 ./bin/create-bin
 ./bin/create-deb
