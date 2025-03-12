@@ -1,13 +1,14 @@
 # eggsmaker
 
-A project from [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
+Un proyecto de [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
 
 ![icon](https://github.com/pieroproietti/pengui/raw/main/assets/pengui.png?raw=true)
 
-`eggsmaker` è una GUI per `penguins-eggs`.
-Scritto dall'amico [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), è essenziale e funzionale. Non copre tutta le possibilità di eggs ma alla fine una GUI deve essere semplice ed intuibile.
+`eggsmaker` es una interfaz gráfica para `penguins-eggs`.
 
-A me piace, spero piaccia a voi e ringrazio Jorge per il suo cimento.
+Escrito por mi amigo [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), es esencial y funcional. No cubre todas las posibilidades de los huevos, pero al final una GUI debe ser simple e intuitiva.
+
+Me gusta, espero que os guste, y agradezco a Jorge su atrevimiento.
 
 ![eggsmaker-running](/images/eggsmaker-running.png)
 
@@ -21,7 +22,7 @@ I added only the following packages:
 
 `sudo apt install python3-pip python3-venv`
 
-Note: just install my `egg-of_debian-bookworm-colibri`.
+Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: `egg-of_debian-bookworm-colibri`.
 
 
 ## Arch
@@ -30,11 +31,14 @@ Su Arch tkinter non è installato di default e va installato nel sistema:
 sudo pacman -S tk
 ```
 
+Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: `egg-of_arch-colibri`.
+
 ## Openmamba
 Su Openmamba `tkinter` non è presente di default e va installato nel sistema:
 ```
 sudo dnf install python3-tk python3-devel glibc-devel
 ```
+Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: `egg-of_openmamba-plasma`.
 
 # Sources
 This is the repository of eggsmaker, to get this sources just: 
@@ -54,7 +58,7 @@ source venv_eggsmaker/bin/activate
 
 Under `bin`, there are usefull scripts to `run`, `create-bin`, `create-deb`, etc. They must always be run from the root of the project and have a self-explanatory name.
 
-## Runnint it
+## Runnint from sources
 `./bin/run`
 
 ## Create bin
