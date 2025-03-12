@@ -2,15 +2,15 @@ Un proyecto de [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
 
 ![icon](https://github.com/pieroproietti/pengui/raw/main/assets/pengui.png?raw=true)
 
+# eggsmaker
+
+![eggsmaker-running](/images/eggsmaker-running.png)
+
 `eggsmaker` es una interfaz gráfica para `penguins-eggs`.
 
 Escrito por mi amigo [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), es esencial y funcional. No cubre todas las posibilidades de penguins-eggs, pero al final una GUI debe ser simple e intuitiva.
 
 Me gusta, espero que os guste, y agradezco a Jorge su atrevimiento.
-
-# eggsmaker
-
-![eggsmaker-running](/images/eggsmaker-running.png)
 
 # Development requisites
 
