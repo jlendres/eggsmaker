@@ -1,7 +1,5 @@
 Un proyecto de [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
 
-![icon](https://github.com/pieroproietti/pengui/raw/main/assets/pengui.png?raw=true)
-
 # eggsmaker
 
 ![eggsmaker-running](/images/eggsmaker-running.png)
