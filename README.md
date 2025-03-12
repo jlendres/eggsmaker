@@ -6,7 +6,7 @@ Un proyecto de [Jorge Luis Endres](mailto://jlecomputer04@gmail.com).
 
 `eggsmaker` es una interfaz gráfica para `penguins-eggs`.
 
-Escrito por mi amigo [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), es esencial y funcional. No cubre todas las posibilidades de los huevos, pero al final una GUI debe ser simple e intuitiva.
+Escrito por mi amigo [Jorge Luis Endres](mailto://jlecomputer04@gmail.com), es esencial y funcional. No cubre todas las posibilidades de penguins-eggs, pero al final una GUI debe ser simple e intuitiva.
 
 Me gusta, espero que os guste, y agradezco a Jorge su atrevimiento.
 
