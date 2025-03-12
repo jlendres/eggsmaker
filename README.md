@@ -26,7 +26,7 @@ Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que tambi
 
 
 ## Arch
-Su Arch tkinter non è installato di default e va installato nel sistema:
+En Arch `tkinter` no está instalado por defecto y debe ser instalado en el sistema:
 ```
 sudo pacman -S tk
 ```
@@ -34,19 +34,18 @@ sudo pacman -S tk
 Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: [egg-of_arch-colibri](https://drive.google.com/drive/folders/1qWh-hWjldQpb6TWSDY9h8tKdD4VadkOr).
 
 ## Openmamba
-Su Openmamba `tkinter` non è presente di default e va installato nel sistema:
+En Openmamba `tkinter` no está presente por defecto y debe ser instalado en el sistema:
 ```
 sudo dnf install python3-tk python3-devel glibc-devel
 ```
 Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: [egg-of_openmamba-plasma](https://drive.google.com/drive/folders/1-7LbgkKIrp8hUFTbO3qGtPKzaHter6RM).
 
 # Sources
-This is the repository of eggsmaker, to get this sources just: 
+Este es el repositorio de eggsmaker, para obtener estas fuentes: 
 
 `git clone https://github.com/pieroproietti/eggsmaker
 
-It is recommended, however to create yourself a [fork](https://github.com/pieroproietti/eggsmaker/fork) of the repository, so that you can manage the project yourself and possibly create some [Pull Requests](https://github.com/pieroproietti/eggsmaker/pulls).
-
+Se recomienda, sin embargo, crear un [fork](https://github.com/pieroproietti/eggsmaker/fork) del repositorio, para que pueda gestionar el proyecto usted mismo y posiblemente crear algunas [Pull Requests](https://github.com/pieroproietti/eggsmaker/pulls).
 
 # start to develop
 run `bin/create_venv` from the root of the project and and follow the instructions.
@@ -56,14 +55,13 @@ Activate virtual environment:
 source venv_eggsmaker/bin/activate
 ```
 
-Under `bin`, there are usefull scripts to `run`, `create-bin`, `create-deb`, etc. They must always be run from the root of the project and have a self-explanatory name.
+Bajo `bin`, hay scripts útiles para `run`, `create-bin`, `create-deb`, etc. Deben ejecutarse siempre desde la raíz del proyecto y tienes un nombre autoexplicativo.
 
 ## Runnint from sources
 `./bin/run`
 
 ## Create bin
-We are using [nuitka](https://nuitka.net/) **2.1.5** on [python](https://www.python.org/) **3.11.2**. To create bin, we need to install too:
-
+Estamos usando [nuitka](https://nuitka.net/) en [python](https://www.python.org/). Para crear bin, necesitamos instalar también:
 `sudo apt install ccache patchelf`
 
 # Packages
