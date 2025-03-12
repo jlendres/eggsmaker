@@ -22,7 +22,7 @@ I added only the following packages:
 
 `sudo apt install python3-pip python3-venv`
 
-Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: `egg-of_debian-bookworm-colibri`.
+Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: [egg-of_debian-bookworm-colibri](https://drive.google.com/drive/folders/18QIqicyecLMuU1Zmb2E039gWawzZuy3e).
 
 
 ## Arch
@@ -31,14 +31,14 @@ Su Arch tkinter non è installato di default e va installato nel sistema:
 sudo pacman -S tk
 ```
 
-Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: `egg-of_arch-colibri`.
+Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: [egg-of_arch-colibri](https://drive.google.com/drive/folders/1qWh-hWjldQpb6TWSDY9h8tKdD4VadkOr).
 
 ## Openmamba
 Su Openmamba `tkinter` non è presente di default e va installato nel sistema:
 ```
 sudo dnf install python3-tk python3-devel glibc-devel
 ```
-Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: `egg-of_openmamba-plasma`.
+Note: Para una configuración sencilla, puedes instalar mi imagen ISO, que también utilizo para el desarrollo de penguins-eggs: [egg-of_openmamba-plasma](https://drive.google.com/drive/folders/1-7LbgkKIrp8hUFTbO3qGtPKzaHter6RM).
 
 # Sources
 This is the repository of eggsmaker, to get this sources just: 
