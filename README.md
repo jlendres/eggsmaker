@@ -47,7 +47,7 @@ Este es el repositorio de eggsmaker, para obtener estas fuentes:
 
 Se recomienda, sin embargo, crear un [fork](https://github.com/pieroproietti/eggsmaker/fork) del repositorio, para que pueda gestionar el proyecto usted mismo y posiblemente crear algunas [Pull Requests](https://github.com/pieroproietti/eggsmaker/pulls).
 
-# start to develop
+# Develop
 run `bin/create_venv` from the root of the project and and follow the instructions.
 
 Activate virtual environment:
@@ -57,20 +57,27 @@ source venv_eggsmaker/bin/activate
 
 Bajo `bin`, hay scripts útiles para `run`, `create-bin`, `create-deb`, etc. Deben ejecutarse siempre desde la raíz del proyecto y tienes un nombre autoexplicativo.
 
-## Runnint from sources
+## Run from sources
 `./bin/run`
 
 ## Create bin
 Estamos usando [nuitka](https://nuitka.net/) en [python](https://www.python.org/). Para crear bin, necesitamos instalar también:
+
 `sudo apt install ccache patchelf`
 
-# Packages
+Para crear el ejecutable:
+```
+./create-bin
+```
+
+
+# Create packages
 
 ## Debian
 
 To create Debian packages we need to install [fpm](https://fpm.readthedocs.io/en/v1.15.1/). 
 
-First install ruby `sudo apt install ruby`, then with gem, install fpm.
+First install ruby `sudo apt install ruby`, then using gem, install fpm.
 ```
 ./bin/create-bin
 ./bin/create-deb
