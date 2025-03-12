@@ -82,3 +82,6 @@ Cree el ejecutable, luego cree el paquete deb:
 ./bin/create-bin
 ./bin/create-deb
 ```
+
+# installation
+Actualmente sólo he creado el paquete para Debian bookworm que puedes encontrar en el repositorio `penguins-eggs-ppa` e instalar con `sudo apt install eggsmaker`.
