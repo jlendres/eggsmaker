@@ -177,7 +177,7 @@ class EggsMakerApp:
         self.footer_line2.pack()
         self.footer_line2_label1 = ctk.CTkLabel(self.footer_line2, text="Penguins Eggs - creado por ", text_color="#009246", font=("Arial", 12))
         self.footer_line2_label1.pack(side="left")
-        self.footer_line2_label2 = ctk.CTkLabel(self.footer_line2, text="Piero Proietti - ", text_color="#ffffff", font=("Arial", 12))
+        self.footer_line2_label2 = ctk.CTkLabel(self.footer_line2, text="Piero Proietti  ", text_color="#ffffff", font=("Arial", 12))
         self.footer_line2_label2.pack(side="left")
         self.footer_line2_label3 = ctk.CTkLabel(self.footer_line2, text="https://penguins-eggs.net/", text_color="#ce2b37", font=("Arial", 12))
         self.footer_line2_label3.pack(side="left")
@@ -297,7 +297,7 @@ class EggsMakerApp:
             cmd = f"sudo {self.eggs_path} produce --max"
         else:
             if self.iso_data_switch_var.get():
-                cmd = f"sudo {self.eggs_path} produce --clone"
+                cmd = f"sudo {self.eggs_path} produce --clone -n"
             else:
                 cmd = f"sudo {self.eggs_path} produce --noicon -n"
         self.execute_command(cmd, self.btn_generar, progress_color="violet", on_complete=self.on_iso_generation_complete)
