@@ -7,6 +7,9 @@ import time
 from PIL import Image, ImageTk
 from tkinter import messagebox, simpledialog, filedialog
 
+# Importamos la versión y el nombre de la aplicación
+from version import __version__, __app__
+
 BUTTON_WIDTH = 200  # Ancho fijo para los botones
 
 class EggsMakerApp:
@@ -19,7 +22,7 @@ class EggsMakerApp:
 
 
         self.root = root
-        self.root.title("Eggs Maker")
+        self.root.title(f"{__app__} - Versión {__version__}")
 
         # Carica l'icona per Linux/macOS
         icon_image = Image.open(os.path.join(base_path, "assets", "eggsmaker.png"))
@@ -135,6 +138,9 @@ class EggsMakerApp:
         self.eggs_version_label.pack(pady=2)
         self.calamares_version_label = ctk.CTkLabel(self.frame_version, text="Calamares: ...", font=("Arial", 14))
         self.calamares_version_label.pack(pady=2)
+        # Agregamos un label adicional con el nombre y la versión de la aplicación
+        self.app_version_label = ctk.CTkLabel(self.frame_version, text=f"{__app__} {__version__}", font=("Arial", 12))
+        self.app_version_label.pack(pady=2)
         self.ejecutando_label = ctk.CTkLabel(self.frame_version, text="", font=("Arial", 16, "bold"), text_color="#ff8c00")
         self.ejecutando_label.pack(pady=2)
         # Derecha: Botón Salir, progress bar y cronómetros
