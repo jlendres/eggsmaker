@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -x
+
 # Source the program and version files
 source bin/program
 source src/version.py
 
 # Set the program version
-PROGRAM_VERSION="${PROGRAM}-${VERSION}"
+PROGRAM_VERSION="${PROGRAM}-${__version__}"
 
 # Get the architecture
 arch=$(uname -m)
@@ -36,6 +38,7 @@ mkdir -p fakeroot/usr/share/applications
 mkdir -p fakeroot/usr/share/icons/hicolor/scalable/apps/
 mkdir -p fakeroot/usr/bin
 
+
 # Copy the files into the fakeroot directory
 cp assets/${PROGRAM}.svg fakeroot/usr/share/icons/hicolor/scalable/apps/
 cp assets/${PROGRAM}.desktop fakeroot/usr/share/applications
@@ -54,7 +57,8 @@ ln -s ../../opt/${PROGRAM}/${PROGRAM}.bin _${PROGRAM}
 cd ${CURRENT}
 
 # Create the deb package
-fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
+#fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
+fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
 
 # Clean up the fakeroot directory
 #rm "${PROGRAM}.dist" -rf

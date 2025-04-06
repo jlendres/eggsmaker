@@ -1,3 +1,3 @@
 #!/bin/bash
-VERSION="0.0.4"
-APP="eggsmaker"
+__version__="0.0.4"
+__app__="eggsmaker"
