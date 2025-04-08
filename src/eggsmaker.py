@@ -300,7 +300,7 @@ class EggsMakerApp:
         self.btn_generar.configure(state="disabled")
         self.start_iso_chronometer()  # Inicia cronómetro de generación (texto rojo)
         if self.iso_comp_switch_var.get():
-            cmd = f"sudo {self.eggs_path} produce --max"
+            cmd = f"sudo {self.eggs_path} produce --max -n"
         else:
             if self.iso_data_switch_var.get():
                 cmd = f"sudo {self.eggs_path} produce --clone -n"
