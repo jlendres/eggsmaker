@@ -1,6 +1,7 @@
 venv*/*
 package
 *.deb
+*.pkg.tar.zst
 eggsmaker*.bin
 eggsmaker*.dist
 eggsmaker*.onefile-build
