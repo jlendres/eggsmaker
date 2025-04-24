@@ -1,9 +1,9 @@
 #!/bin/bash
 <<<<<<< HEAD
-VERSION="0.0.6"
+VERSION="0.0.7"
 APP="eggsmaker"
 =======
-version="0.0.5"
+version="0.0.7"
 app="Eggs Maker"
 
 __version__ = version
