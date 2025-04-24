@@ -7,7 +7,7 @@ source bin/program
 source src/version.py
 
 # Set the program version
-PROGRAM_VERSION="${PROGRAM}-${__version__}"
+VERSION="${__version__}"
 
 # Get the architecture
 arch=$(uname -m)
@@ -57,10 +57,14 @@ ln -s ../../opt/${PROGRAM}/${PROGRAM}.bin _${PROGRAM}
 cd ${CURRENT}
 
 # Create the deb package
-#fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
-fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
+fpm -s dir \
+    -t pacman \
+    -n eggsmaker \
+    -v 0.0.4 \
+    --architecture x86_64 \
+    --description "Eggsmaker - builder per ISO live" \
+    --url "https://github.com/jlendres/eggsmaker" \
+    --license "MIT" \
+    ./eggsmaker.bin=/usr/bin/eggsmaker
 
-# Clean up the fakeroot directory
-#rm "${PROGRAM}.dist" -rf
 rm fakeroot -rf
-

@@ -4,7 +4,7 @@ cd ~/${PROGRAM}
 
 # Set the program version
 source src/version.py
-PROGRAM_VERSION="${PROGRAM}-${VERSION}"
+PROGRAM_VERSION="${PROGRAM}-${__versions__}"
 
 # Get the architecture
 arch=$(uname -m)
