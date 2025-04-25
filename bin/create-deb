@@ -7,7 +7,7 @@ source bin/program
 source src/version.py
 
 # Set the program version
-PROGRAM_VERSION="${PROGRAM}-${__version__}"
+PROGRAM_VERSION="${PROGRAM}-${version}"
 
 # Get the architecture
 arch=$(uname -m)
