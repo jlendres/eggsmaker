@@ -3,11 +3,11 @@
 set -x
 
 # Source the program and version files
-source bin/program
 source src/version.py
 
 # Set the program version
-PROGRAM_VERSION="${PROGRAM}-${version}"
+PROGRAM_NAME="eggsmaker"
+PROGRAM_VERSIONED="${PROGRAM_NAME}-${version}"
 
 # Get the architecture
 arch=$(uname -m)
@@ -30,37 +30,36 @@ case $arch in
 esac
 
 # Clean up any existing packages and fakeroot directory
-rm -f ${PROGRAM}-*.deb ${PROGRAM}-*.bin fakeroot -rf
+rm -f ${PROGRAM_NAME}-*.deb ${PROGRAM_NAME}-*.bin fakeroot -rf
 
 # Create the fakeroot directory structure
-mkdir -p fakeroot/opt/${PROGRAM}
+mkdir -p fakeroot/opt/${PROGRAM_NAME}
 mkdir -p fakeroot/usr/share/applications
 mkdir -p fakeroot/usr/share/icons/hicolor/scalable/apps/
 mkdir -p fakeroot/usr/bin
 
 
 # Copy the files into the fakeroot directory
-cp assets/${PROGRAM}.svg fakeroot/usr/share/icons/hicolor/scalable/apps/
-cp assets/${PROGRAM}.desktop fakeroot/usr/share/applications
-cp -r ${PROGRAM}.dist/* fakeroot/opt/${PROGRAM}
+cp assets/${PROGRAM_NAME}.svg fakeroot/usr/share/icons/hicolor/scalable/apps/
+cp assets/${PROGRAM_NAME}.desktop fakeroot/usr/share/applications
+cp -r ${PROGRAM_NAME}.dist/* fakeroot/opt/${PROGRAM_NAME}
 
 # Set the permissions for the copied files
-find fakeroot/opt/${PROGRAM}/${PROGRAM}.bin -type f -exec chmod 644 -- {} +
-find fakeroot/opt/${PROGRAM}/${PROGRAM}.bin -type d -exec chmod 755 -- {} +
+find fakeroot/opt/${PROGRAM_NAME}/${PROGRAM_NAME}.bin -type f -exec chmod 644 -- {} +
+find fakeroot/opt/${PROGRAM_NAME}/${PROGRAM_NAME}.bin -type d -exec chmod 755 -- {} +
 find fakeroot/usr/share -type f -exec chmod 644 -- {} +
-chmod +x fakeroot/opt/${PROGRAM}/${PROGRAM}.bin
+chmod +x fakeroot/opt/${PROGRAM_NAME}/${PROGRAM_NAME}.bin
 
-# crea /usr/bin/${PROGRAM}
+# crea /usr/bin/${PROGRAM_NAME}
 CURRENT=$(pwd)
 cd ./fakeroot/usr/bin
-ln -s ../../opt/${PROGRAM}/${PROGRAM}.bin _${PROGRAM}
+ln -s ../../opt/${PROGRAM_NAME}/${PROGRAM_NAME}.bin ${PROGRAM_NAME}
 cd ${CURRENT}
 
 # Create the deb package
 #fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -v ${VERSION} -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
-fpm -C fakeroot -s dir -t deb -n "${PROGRAM}" -p ${PROGRAM_VERSION}${ARCHITECTURE}.deb
+fpm -C fakeroot -s dir -t deb -n "${PROGRAM_NAME}" -p ${PROGRAM_VERSIONED}${ARCHITECTURE}.deb
 
 # Clean up the fakeroot directory
 #rm "${PROGRAM}.dist" -rf
 rm fakeroot -rf
-
