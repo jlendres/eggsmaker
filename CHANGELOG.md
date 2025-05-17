@@ -1,4 +1,9 @@
 <<<<<<< HEAD:DOCUMENTS/README.md
+#NEWS
+Se incorpora multilenguaje a eggsmaker -Español, Italiano,
+Ingles , Portugues.
+Retoques esteticos menores
+
 # DOCUMENTATION
 Version 0.0.6
 Se mejora la distribucion de objetos de la pantalla

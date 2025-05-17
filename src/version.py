@@ -1,6 +1,6 @@
 #!/bin/bash
-version="0.0.8"
-app="Eggs Maker"
+version="1.0.1"
+app="Eggs Maker -Multilenguaje"
 
 __version__ = version
 __app__ = app
