@@ -459,7 +459,7 @@ class EggsMakerApp:
                 else:
                     raise subprocess.CalledProcessError(process.returncode, command)
             except Exception as e:
-                self.root.after(0, lambda: messagebox.showerror(_("Error"), f"{_("Error:")}{str(e)}"))
+                self.root.after(0, lambda: messagebox.showerror(_("Error"), f"{_('Error:')}{str(e)}"))
                 if button:
                     self.root.after(0, lambda: button.configure(fg_color="#295699", state="normal"))
             finally:
