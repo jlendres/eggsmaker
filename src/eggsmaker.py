@@ -5,24 +5,92 @@ import sys
 import threading
 import time
 import shutil
+import gettext
+import locale
 from PIL import Image, ImageTk
 from tkinter import messagebox, simpledialog, filedialog, Toplevel
 
 # Importamos la versión y el nombre de la aplicación
 from version import __version__, __app__
 
+# Configuración de internacionalización
+def get_base_path():
+    """Obtiene la ruta base de la aplicación, funciona tanto en desarrollo como compilado"""
+    if getattr(sys, 'frozen', False):
+        # Ejecutando como ejecutable compilado
+        if hasattr(sys, '_MEIPASS'):
+            # PyInstaller
+            return sys._MEIPASS
+        else:
+            # Nuitka u otros
+            return os.path.dirname(sys.executable)
+    else:
+        # Ejecutando en desarrollo
+        return os.path.dirname(os.path.abspath(__file__))
+
+def setup_i18n():
+    try:
+        # Intentar configurar el locale del sistema
+        try:
+            locale.setlocale(locale.LC_ALL, '')
+        except locale.Error:
+            # Si falla, intentar con las codificaciones más comunes
+            for loc in ['es_ES.UTF-8', 'es_ES.utf8', 'es_ES', 'es.UTF-8', 'C.UTF-8', 'C']:
+                try:
+                    locale.setlocale(locale.LC_ALL, loc)
+                    break
+                except locale.Error:
+                    continue
+
+        # Obtener el idioma del sistema
+        system_lang = locale.getlocale()[0]
+        if system_lang:
+            language = system_lang.split('_')[0]
+            # Verificar si el idioma está soportado
+            if language not in ['es', 'en', 'pt', 'it']:
+                language = 'es'
+        else:
+            language = 'es'
+    except:
+        language = 'es'  # Si hay algún error, usar español
+
+    # Usar get_base_path para localizar el directorio de traducciones
+    locale_path = os.path.join(get_base_path(), 'locales')
+
+    try:
+        # Intentar cargar el idioma del sistema primero
+        lang = gettext.translation('eggsmaker', locale_path, languages=[language])
+        lang.install()
+        return lang.gettext
+    except FileNotFoundError:
+        try:
+            # Si no está disponible, usar español
+            lang = gettext.translation('eggsmaker', locale_path, languages=['es'])
+            lang.install()
+            return lang.gettext
+        except FileNotFoundError:
+            # Si todo falla, usar gettext básico
+            gettext.install('eggsmaker')
+            return gettext.gettext
+
+# Inicializar la función de traducción
+_ = setup_i18n()
+
 BUTTON_WIDTH = 200  # Ancho fijo para los botones
 
 class EggsMakerApp:
     def __init__(self, root):
+        # Oculta la ventana principal antes de pedir la clave
+        root.withdraw()
+
         # Ruta base: funciona tanto en desarrollo como tras compilación
-        if getattr(sys, 'frozen', False):
-            base_path = os.path.dirname(sys.executable)
-        else:
-            base_path = os.path.dirname(os.path.abspath(__file__))
+        base_path = get_base_path()
 
         self.root = root
-        self.root.title(f"{__app__} - Versión {__version__}")
+        self.root.title(f"{__app__} - {_('Versión')} {__version__}")
+
+        # Fondo principal oscuro y color de widgets
+        self.root.configure(bg="#23272e")
 
         # Cargar ícono
         icon_image = Image.open(os.path.join(base_path, "assets", "eggsmaker.png"))
@@ -33,14 +101,27 @@ class EggsMakerApp:
         self.eggs_path = self.detect_eggs_path()
 
         # Variables para cronómetros y contadores
-        self.copying = False          # Indica si se está realizando la copia
-        self.iso_generating = False   # Indica si se está generando la ISO
-        self.total_running = False    # Controla si el total está en ejecución
+        self.copying = False
+        self.iso_generating = False
+        self.total_running = False
 
-        self.copy_elapsed = 0         # Tiempo transcurrido en copia
-        self.iso_elapsed = 0          # Tiempo transcurrido en generación ISO
+        self.copy_elapsed = 0
+        self.iso_elapsed = 0
+        self.copia_contador = 0
 
-        self.copia_contador = 0       # Contador de copias realizadas
+        # Fuentes y colores personalizados
+        self.font_title = ("Segoe UI", 17, "bold")
+        self.font_label = ("Segoe UI", 13)
+        self.font_button = ("Segoe UI", 14, "bold")
+        self.font_terminal = ("JetBrains Mono", 14)
+        self.font_versions = ("JetBrains Mono", 15, "bold")
+        self.color_orange = "#FD8637"
+        self.color_bg = "#051226"
+        self.color_panel = "#001835"
+        self.color_button = "#0E48C5"
+        self.color_button_hover = "#1741a6"
+        self.color_success = "#6bdc87"
+        self.color_error = "#ff0000"
 
         # Inicializar apariencia
         ctk.set_appearance_mode("dark")
@@ -51,18 +132,19 @@ class EggsMakerApp:
         self.calamares_switch_var = ctk.BooleanVar(value=False)
         self.replica_switch_var = ctk.BooleanVar(value=False)
         self.edit_config_switch_var = ctk.BooleanVar(value=False)
-        self.iso_data_switch_var = ctk.BooleanVar(value=False)   # Sin datos / con datos
-        self.iso_comp_switch_var = ctk.BooleanVar(value=False)   # Standard / Máxima compresión
-        self.copy_speed_switch_var = ctk.BooleanVar(value=False)   # Copia lenta / rápida
+        self.iso_data_switch_var = ctk.BooleanVar(value=False)
+        self.iso_comp_switch_var = ctk.BooleanVar(value=False)
+        self.copy_speed_switch_var = ctk.BooleanVar(value=False)
 
         self.create_widgets()
         self.create_action_buttons()
         self.request_password()
+        # Si la contraseña fue ingresada correctamente, muestra la ventana principal
+        root.deiconify()
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.update_versions()
         self.adjust_window_size()
         self.label_iso_size = ctk.CTkLabel(self.main_frame, text="", font=("Courier", 14, "bold"), text_color="red")
-        # Ajusta la ubicación según donde estaba el botón
         self.label_iso_size.grid(row=2, column=0, pady=(0, 10))
 
     def detect_eggs_path(self):
@@ -74,132 +156,160 @@ class EggsMakerApp:
 
     def create_widgets(self):
         # --- Main Frame ---
-        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame = ctk.CTkFrame(self.root, corner_radius=15, fg_color=self.color_panel, border_width=1, border_color="#444C5E")
         self.main_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
         # --- Área de Terminal (altura 250) ---
-        self.terminal_frame = ctk.CTkFrame(self.main_frame)
+        self.terminal_frame = ctk.CTkFrame(self.main_frame, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.terminal_frame.grid(row=0, column=0, sticky="nsew", pady=(0, 10))
-        self.terminal_text = ctk.CTkTextbox(self.terminal_frame, fg_color="black", text_color="lime", wrap="word", height=250)
+        self.terminal_text = ctk.CTkTextbox(
+            self.terminal_frame,
+            fg_color="#0e1010",
+            text_color="lime",
+            wrap="word",
+            height=250,
+            font=self.font_terminal
+        )
         self.terminal_text.pack(fill="both", expand=True, padx=5, pady=5)
 
         # --- Panel Superior: 4 paneles en una fila ---
-        self.top_controls = ctk.CTkFrame(self.main_frame)
+        self.top_controls = ctk.CTkFrame(self.main_frame, corner_radius=10, fg_color=self.color_panel, border_width=1, border_color="#444C5E")
         self.top_controls.grid(row=1, column=0, sticky="nsew", pady=(0, 10))
         for col in range(4):
             self.top_controls.grid_columnconfigure(col, weight=1)
 
         # Panel 1: Acciones Previas
-        self.frame_acciones = ctk.CTkFrame(self.top_controls)
+        self.frame_acciones = ctk.CTkFrame(self.top_controls, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.frame_acciones.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-        label_acciones = ctk.CTkLabel(self.frame_acciones, text="Acciones Previas", font=("Arial", 16, "bold"), text_color="orange")
+        label_acciones = ctk.CTkLabel(self.frame_acciones, text=_("Acciones Previas"), font=self.font_title, text_color=self.color_orange)
         label_acciones.pack(pady=5)
-        self.prep_switch = ctk.CTkSwitch(self.frame_acciones, text="Preparación (Limpiar y crear entorno)", variable=self.prep_switch_var, text_color="white")
+        self.prep_switch = ctk.CTkSwitch(self.frame_acciones, text=_("Preparación (Limpiar y crear entorno)"), variable=self.prep_switch_var, text_color="white")
         self.prep_switch.pack(anchor="w", padx=5, pady=2)
-        self.calamares_switch = ctk.CTkSwitch(self.frame_acciones, text="Instalar/Actualizar Calamares", variable=self.calamares_switch_var, text_color="white")
+        self.calamares_switch = ctk.CTkSwitch(self.frame_acciones, text=_("Instalar/Actualizar Calamares"), variable=self.calamares_switch_var, text_color="white")
         self.calamares_switch.pack(anchor="w", padx=5, pady=2)
-        self.btn_pre = ctk.CTkButton(self.frame_acciones, text="Aplicar", command=self.apply_pre_actions, width=BUTTON_WIDTH)
+        self.btn_pre = ctk.CTkButton(self.frame_acciones, text=_("Aplicar"), command=self.apply_pre_actions, width=BUTTON_WIDTH, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
         self.btn_pre.pack(side="bottom", pady=5)
 
         # Panel 2: Opciones Adicionales
-        self.frame_opciones = ctk.CTkFrame(self.top_controls)
+        self.frame_opciones = ctk.CTkFrame(self.top_controls, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.frame_opciones.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
-        label_opciones = ctk.CTkLabel(self.frame_opciones, text="Opciones Adicionales", font=("Arial", 16, "bold"), text_color="orange")
+        label_opciones = ctk.CTkLabel(self.frame_opciones, text=_("Opciones Adicionales"), font=self.font_title, text_color=self.color_orange)
         label_opciones.pack(pady=5)
-        self.replica_switch = ctk.CTkSwitch(self.frame_opciones, text="Generar réplica del escritorio actual", variable=self.replica_switch_var, state="disabled", text_color="white")
+        self.replica_switch = ctk.CTkSwitch(self.frame_opciones, text=_("Generar réplica del escritorio actual"), variable=self.replica_switch_var, state="disabled", text_color="white")
         self.replica_switch.pack(anchor="w", padx=5, pady=2)
-        self.edit_config_switch = ctk.CTkSwitch(self.frame_opciones, text="Editar configuración de ISO", variable=self.edit_config_switch_var, state="disabled", text_color="white")
+        self.edit_config_switch = ctk.CTkSwitch(self.frame_opciones, text=_("Editar configuración de ISO"), variable=self.edit_config_switch_var, state="disabled", text_color="white")
         self.edit_config_switch.pack(anchor="w", padx=5, pady=2)
-        self.btn_opciones = ctk.CTkButton(self.frame_opciones, text="Aplicar", command=self.apply_additional_options, state="disabled", width=BUTTON_WIDTH)
+        self.btn_opciones = ctk.CTkButton(self.frame_opciones, text=_("Aplicar"), command=self.apply_additional_options, state="disabled", width=BUTTON_WIDTH, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
         self.btn_opciones.pack(side="bottom", pady=5)
 
         # Panel 3: Generar ISO
-        self.frame_generar = ctk.CTkFrame(self.top_controls)
+        self.frame_generar = ctk.CTkFrame(self.top_controls, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.frame_generar.grid(row=0, column=2, padx=5, pady=5, sticky="nsew")
-        label_generar = ctk.CTkLabel(self.frame_generar, text="Generar ISO", font=("Arial", 16, "bold"), text_color="orange")
+        label_generar = ctk.CTkLabel(self.frame_generar, text=_("Generar ISO"), font=self.font_title, text_color=self.color_orange)
         label_generar.pack(pady=5)
-        self.iso_data_switch = ctk.CTkSwitch(self.frame_generar, text="Incluir datos", variable=self.iso_data_switch_var, state="disabled", text_color="white")
+        self.iso_data_switch = ctk.CTkSwitch(self.frame_generar, text=_("Incluir datos"), variable=self.iso_data_switch_var, state="disabled", text_color="white")
         self.iso_data_switch.pack(anchor="w", padx=5, pady=2)
-        self.iso_comp_switch = ctk.CTkSwitch(self.frame_generar, text="Máxima compresión", variable=self.iso_comp_switch_var, text_color="white")
+        self.iso_comp_switch = ctk.CTkSwitch(self.frame_generar, text=_("Máxima compresión"), variable=self.iso_comp_switch_var, text_color="white")
         self.iso_comp_switch.pack(anchor="w", padx=5, pady=2)
-        self.btn_generar = ctk.CTkButton(self.frame_generar, text="Generar ISO", command=self.apply_iso_generation, state="disabled", width=BUTTON_WIDTH)
+        self.btn_generar = ctk.CTkButton(self.frame_generar, text=_("Generar ISO"), command=self.apply_iso_generation, state="disabled", width=BUTTON_WIDTH, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
         self.btn_generar.pack(side="bottom", pady=5)
 
         # Panel 4: Copiar ISO
-        self.frame_copiar = ctk.CTkFrame(self.top_controls)
+        self.frame_copiar = ctk.CTkFrame(self.top_controls, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.frame_copiar.grid(row=0, column=3, padx=5, pady=5, sticky="nsew")
-        label_copiar = ctk.CTkLabel(self.frame_copiar, text="Copiar ISO", font=("Arial", 16, "bold"), text_color="orange")
+        label_copiar = ctk.CTkLabel(self.frame_copiar, text=_("Copiar ISO"), font=self.font_title, text_color=self.color_orange)
         label_copiar.pack(pady=5)
-        self.copy_speed_switch = ctk.CTkSwitch(self.frame_copiar, text="Copia Rápida", variable=self.copy_speed_switch_var, text_color="white")
+        self.copy_speed_switch = ctk.CTkSwitch(self.frame_copiar, text=_("Copia Rápida"), variable=self.copy_speed_switch_var, text_color="white")
         self.copy_speed_switch.pack(anchor="w", padx=5, pady=2)
-        self.btn_copiar = ctk.CTkButton(self.frame_copiar, text="Copiar ISO Generada", command=lambda: self.copy_iso(self.btn_copiar), state="disabled", width=BUTTON_WIDTH)
+        self.btn_copiar = ctk.CTkButton(self.frame_copiar, text=_("Copiar ISO Generada"), command=lambda: self.copy_iso(self.btn_copiar), state="disabled", width=BUTTON_WIDTH, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
         self.btn_copiar.pack(side="bottom", pady=5)
 
         # --- Panel Inferior: Estado y versiones ---
-        self.bottom_controls = ctk.CTkFrame(self.main_frame)
+        self.bottom_controls = ctk.CTkFrame(self.main_frame, corner_radius=10, fg_color=self.color_panel, border_width=1, border_color="#444C5E")
         self.bottom_controls.grid(row=2, column=0, sticky="nsew", pady=(0, 10))
         self.bottom_controls.grid_columnconfigure(0, weight=2)
         self.bottom_controls.grid_columnconfigure(1, weight=1)
 
         # Estado: etiqueta "Ejecutando", progress bar, porcentaje, contador de copias y cronómetros.
-        self.frame_status = ctk.CTkFrame(self.bottom_controls)
+        self.frame_status = ctk.CTkFrame(self.bottom_controls, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.frame_status.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-        self.ejecutando_label = ctk.CTkLabel(self.frame_status, text="", font=("Arial", 20, "bold"), text_color="orange")
+        self.ejecutando_label = ctk.CTkLabel(self.frame_status, text=_("Ejecutando"), font=("Segoe UI", 20, "bold"), text_color=self.color_orange)
         self.ejecutando_label.pack(pady=5)
-        self.progress_bar = ctk.CTkProgressBar(self.frame_status, height=15, progress_color="orange")
+        self.progress_bar = ctk.CTkProgressBar(self.frame_status, height=20, progress_color=self.color_orange, corner_radius=10)
         self.progress_bar.pack(fill="x", padx=5, pady=(5, 2))
-        self.copy_percentage_label = ctk.CTkLabel(self.frame_status, text="0%", font=("Arial", 12))
+        self.copy_percentage_label = ctk.CTkLabel(self.frame_status, text="0%", font=self.font_label)
         self.copy_percentage_label.pack(padx=5, pady=(0, 2))
-        self.contador_label = ctk.CTkLabel(self.frame_status, text="Copias realizadas: 0", font=("Arial", 12))
+        self.contador_label = ctk.CTkLabel(self.frame_status, text=_("Copias realizadas: 0"), font=self.font_label)
         self.contador_label.pack(padx=5, pady=(0, 5))
-        self.chrono_frame = ctk.CTkFrame(self.frame_status)
+        self.chrono_frame = ctk.CTkFrame(self.frame_status, corner_radius=8, fg_color=self.color_panel)
         self.chrono_frame.pack(fill="x", padx=5, pady=(0, 10))
         self.chrono_frame.grid_columnconfigure(0, weight=1)
         self.chrono_frame.grid_columnconfigure(1, weight=1)
         self.chrono_frame.grid_columnconfigure(2, weight=1)
-        self.copy_chrono_label = ctk.CTkLabel(self.chrono_frame, text="", text_color="cyan", font=("Arial", 20, "bold"), anchor="center")
+        self.copy_chrono_label = ctk.CTkLabel(self.chrono_frame, text="", text_color="#56efef", font=("Segoe UI", 20, "bold"), anchor="center")
         self.copy_chrono_label.grid(row=0, column=0, padx=5, sticky="nsew")
-        self.iso_chrono_label = ctk.CTkLabel(self.chrono_frame, text="", text_color="red", font=("Arial", 20, "bold"), anchor="center")
+        self.iso_chrono_label = ctk.CTkLabel(self.chrono_frame, text="", text_color="#ff052b", font=("Segoe UI", 20, "bold"), anchor="center")
         self.iso_chrono_label.grid(row=0, column=1, padx=5, sticky="nsew")
-        self.total_chrono_label = ctk.CTkLabel(self.chrono_frame, text="", text_color="#39FF14", font=("Arial", 20, "bold"), anchor="center")
+        self.total_chrono_label = ctk.CTkLabel(self.chrono_frame, text="", text_color="#39ee39", font=("Segoe UI", 20, "bold"), anchor="center")
         self.total_chrono_label.grid(row=0, column=2, padx=5, sticky="nsew")
 
         # Panel de versiones
-        self.versions_frame = ctk.CTkFrame(self.bottom_controls)
+        self.versions_frame = ctk.CTkFrame(self.bottom_controls, corner_radius=10, fg_color=self.color_bg, border_width=1, border_color="#444C5E")
         self.versions_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-        self.version_penguins_label = ctk.CTkLabel(self.versions_frame, text="Penguins Eggs: N/A", font=("Arial", 14), text_color="orange", anchor="center", justify="center")
+        self.version_penguins_label = ctk.CTkLabel(
+            self.versions_frame,
+            text=f"Penguins Eggs: N/A",
+            font=self.font_versions,  # <--- aquí
+            text_color=self.color_orange,
+            anchor="center",
+            justify="center"
+        )
         self.version_penguins_label.pack(pady=10, fill="both")
-        self.version_calamares_label = ctk.CTkLabel(self.versions_frame, text="Calamares: N/A", font=("Arial", 14), text_color="orange", anchor="center", justify="center")
+        self.version_calamares_label = ctk.CTkLabel(
+            self.versions_frame,
+            text=f"Calamares: N/A",
+            font=self.font_versions,  # <--- aquí
+            text_color=self.color_orange,
+            anchor="center",
+            justify="center"
+        )
         self.version_calamares_label.pack(pady=10, fill="both")
-        self.version_app_label = ctk.CTkLabel(self.versions_frame, text=f"{__app__}: {__version__}", font=("Arial", 14), text_color="orange", anchor="center", justify="center")
+        self.version_app_label = ctk.CTkLabel(
+            self.versions_frame,
+            text=f"{__app__}: {__version__}",
+            font=self.font_versions,  # <--- aquí
+            text_color=self.color_orange,
+            anchor="center",
+            justify="center"
+        )
         self.version_app_label.pack(pady=10, fill="both")
 
         # Configuración del grid principal del main_frame
-        self.main_frame.grid_rowconfigure(0, weight=4)  # Terminal
-        self.main_frame.grid_rowconfigure(1, weight=1)  # Top controls
-        self.main_frame.grid_rowconfigure(2, weight=1)  # Bottom controls
+        self.main_frame.grid_rowconfigure(0, weight=4)
+        self.main_frame.grid_rowconfigure(1, weight=1)
+        self.main_frame.grid_rowconfigure(2, weight=1)
         self.main_frame.grid_columnconfigure(0, weight=1)
 
     def create_action_buttons(self):
         """Crea la fila inferior con los botones: Info, Reiniciar eggsmaker y Salir."""
-        self.action_frame = ctk.CTkFrame(self.main_frame)
+        self.action_frame = ctk.CTkFrame(self.main_frame, corner_radius=10, fg_color=self.color_panel, border_width=1, border_color="#444C5E")
         self.action_frame.grid(row=3, column=0, sticky="ew", pady=(10, 0))
         for i in range(3):
             self.action_frame.grid_columnconfigure(i, weight=1)
 
         # Botón Info
-        self.info_button = ctk.CTkButton(self.action_frame, text="Info", command=self.show_info, width=BUTTON_WIDTH)
+        self.info_button = ctk.CTkButton(self.action_frame, text=_("Info"), command=self.show_info, width=BUTTON_WIDTH, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
         self.info_button.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
         # ETIQUETA DE TAMAÑO ISO (inicialmente oculta)
-        self.size_label = ctk.CTkLabel(self.action_frame, text="Tamaño ISO: N/A", font=("Arial", 20, "bold"), text_color="red")
+        self.size_label = ctk.CTkLabel(self.action_frame, text=_("Tamaño ISO: N/A"), font=("Segoe UI", 20, "bold"), text_color=self.color_orange)
         self.size_label.grid(row=0, column=1, padx=5, pady=5)
         self.size_label.grid_remove()  # Oculta el label al inicio
 
         # Botón Salir
-        self.exit_button = ctk.CTkButton(self.action_frame, text="Salir", command=self.on_close, width=BUTTON_WIDTH)
+        self.exit_button = ctk.CTkButton(self.action_frame, text=_("Salir"), command=self.on_close, width=BUTTON_WIDTH, font=self.font_button, fg_color="#ff052b", hover_color="#a8001a", corner_radius=8)
         self.exit_button.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
     def adjust_window_size(self):
@@ -233,9 +343,58 @@ class EggsMakerApp:
         self.version_app_label.configure(text=f"{__app__}: {__version__}")
 
     def request_password(self):
-        self.password = simpledialog.askstring("Autenticación requerida", "Introduce tu contraseña de sudo:", show="*")
+        # Ventana modal personalizada para contraseña sudo
+        dialog = ctk.CTkToplevel(self.root)
+        dialog.title(_("Autenticación requerida"))
+        dialog.geometry("400x240")
+        dialog.configure(bg=self.color_bg)
+        dialog.focus_force()
+        dialog.resizable(False, False)
+
+        # Centrar ventana
+        dialog.update_idletasks()
+        x = (dialog.winfo_screenwidth() // 2) - (400 // 2)
+        y = (dialog.winfo_screenheight() // 2) - (240 // 2)
+        dialog.geometry(f"+{x}+{y}")
+
+        label = ctk.CTkLabel(dialog, text=_("Introduce tu contraseña de sudo:"), font=self.font_label, text_color=self.color_orange)
+        label.pack(pady=(25, 10))
+
+        entry = ctk.CTkEntry(dialog, show="*", width=250, font=self.font_label)
+        entry.pack(pady=5)
+        entry.focus_set()
+
+        status_label = ctk.CTkLabel(dialog, text="", font=self.font_label, text_color=self.color_error)
+        status_label.pack(pady=(5, 0))
+
+        def on_accept(event=None):  # <--- acepta evento opcional
+            pwd = entry.get()
+            if not pwd:
+                status_label.configure(text=_("La contraseña no puede estar vacía"))
+                return
+            self.password = pwd
+            dialog.destroy()
+
+        def on_cancel():
+            self.password = None
+            dialog.destroy()
+            self.root.destroy()
+
+        btn_frame = ctk.CTkFrame(dialog, fg_color=self.color_bg)
+        btn_frame.pack(pady=15)
+        ok_btn = ctk.CTkButton(btn_frame, text=_("Aceptar"), command=on_accept, width=100, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
+        ok_btn.grid(row=0, column=0, padx=10)
+        cancel_btn = ctk.CTkButton(btn_frame, text=_("Cancelar"), command=on_cancel, width=100, font=self.font_button, fg_color="#ff052b", hover_color="#a8001a", corner_radius=8)
+        cancel_btn.grid(row=0, column=1, padx=10)
+
+        dialog.protocol("WM_DELETE_WINDOW", on_cancel)
+        entry.bind("<Return>", on_accept)  # <--- permite Enter para aceptar
+        dialog.wait_visibility()
+        dialog.grab_set()
+        self.root.wait_window(dialog)
+
         if not self.password:
-            messagebox.showerror("Error", "Se requiere contraseña para continuar")
+            self.show_custom_error(_("Error"), _("Se requiere contraseña para continuar"))
             self.root.destroy()
 
     # ----------- Funciones de Cronómetro -----------
@@ -245,7 +404,7 @@ class EggsMakerApp:
             time.sleep(1)
             self.copy_elapsed += 1
             elapsed_str = time.strftime("%H:%M:%S", time.gmtime(self.copy_elapsed))
-            self.root.after(0, lambda: self.copy_chrono_label.configure(text=f"Copia: {elapsed_str}"))
+            self.root.after(0, lambda: self.copy_chrono_label.configure(text=f"{_('Copia: ')}{elapsed_str}"))
 
     def update_iso_timer(self):
         """Actualiza la etiqueta del cronómetro de generación ISO mientras se esté generando."""
@@ -253,7 +412,7 @@ class EggsMakerApp:
             time.sleep(1)
             self.iso_elapsed += 1
             elapsed_str = time.strftime("%H:%M:%S", time.gmtime(self.iso_elapsed))
-            self.root.after(0, lambda: self.iso_chrono_label.configure(text=f"Generación: {elapsed_str}"))
+            self.root.after(0, lambda: self.iso_chrono_label.configure(text=f"{_('Generación: ')}{elapsed_str}"))
 
     def update_total_timer(self):
         """Actualiza el cronómetro total mientras haya alguna acción en curso."""
@@ -261,7 +420,7 @@ class EggsMakerApp:
             time.sleep(1)
             total = self.iso_elapsed + self.copy_elapsed
             total_str = time.strftime("%H:%M:%S", time.gmtime(total))
-            self.root.after(0, lambda: self.total_chrono_label.configure(text=f"Total: {total_str}"))
+            self.root.after(0, lambda: self.total_chrono_label.configure(text=f"{_('Total: ')}{total_str}"))
             if not self.iso_generating and not self.copying:
                 self.total_running = False
                 break
@@ -276,8 +435,8 @@ class EggsMakerApp:
     def execute_command(self, command, button, progress_color=None, on_complete=None):
         def run_command():
             try:
-                proc_text = button.cget("text") if button is not None else "Ejecutando"
-                self.root.after(0, lambda: self.ejecutando_label.configure(text=f"Ejecutando: {proc_text}"))
+                proc_text = button.cget("text") if button is not None else _("Ejecutando")
+                self.root.after(0, lambda: self.ejecutando_label.configure(text=f"{_('Ejecutando: ')}{proc_text}"))
                 if button:
                     self.root.after(0, lambda: button.configure(fg_color="#ff0000", state="disabled"))
                 if progress_color:
@@ -296,11 +455,11 @@ class EggsMakerApp:
                 if process.returncode == 0:
                     if button:
                         self.root.after(0, lambda: button.configure(fg_color="#6bdc87", state="normal"))
-                    self.root.after(0, lambda: messagebox.showinfo("Éxito", "Operación completada"))
+                    self.root.after(0, lambda: messagebox.showinfo(_("Éxito"), _("Operación completada")))
                 else:
                     raise subprocess.CalledProcessError(process.returncode, command)
             except Exception as e:
-                self.root.after(0, lambda: messagebox.showerror("Error", f"Error: {str(e)}"))
+                self.root.after(0, lambda: messagebox.showerror(_("Error"), f"{_("Error:")}{str(e)}"))
                 if button:
                     self.root.after(0, lambda: button.configure(fg_color="#295699", state="normal"))
             finally:
@@ -456,7 +615,7 @@ class EggsMakerApp:
             config_file = "/etc/penguins-eggs.d/eggs.yaml"
             if not os.path.exists(config_file):
                 messagebox.showerror("Error", f"Archivo no encontrado: {config_file}")
-                button.configure(fg_color="#6bdc87", state="normal")
+                button.configure(fg_color="#83f6a0", state="normal")
                 return
             subprocess.run(f'echo {self.password} | sudo -S chmod 666 {config_file}', shell=True, check=True)
             with open(config_file, "r") as file:
@@ -480,10 +639,10 @@ class EggsMakerApp:
             edit_window.focus_force()
             bold_font = ctk.CTkFont(family="Arial", size=12, weight="bold")
             label_texts = {
-                "root_passwd": "Contraseña de root:",
-                "snapshot_basename": "Nombre base del snapshot (ej: mi-distro):",
-                "snapshot_prefix": "Prefijo del snapshot (ej: personalizada-):",
-                "user_opt_passwd": "Contraseña de usuario:"
+                "root_passwd": _("Contraseña de root:"),
+                "snapshot_basename": _("Nombre base del snapshot (ej: mi-distro):"),
+                "snapshot_prefix": _("Prefijo del snapshot (ej: personalizada-):"),
+                "user_opt_passwd": _("Contraseña de usuario:")
             }
             entries = {}
             row = 0
@@ -521,9 +680,9 @@ class EggsMakerApp:
                 edit_window.geometry(f"{req_width}x{req_height}")
                 edit_window.after(2000, edit_window.destroy)
 
-            btn_save = ctk.CTkButton(edit_window, text="Guardar cambios", command=on_save, width=BUTTON_WIDTH)
+            btn_save = ctk.CTkButton(edit_window, text=_("Guardar cambios"), command=on_save, width=BUTTON_WIDTH)
             btn_save.grid(row=row+1, column=0, padx=10, pady=10)
-            btn_cancel = ctk.CTkButton(edit_window, text="Cancelar", command=edit_window.destroy, width=BUTTON_WIDTH)
+            btn_cancel = ctk.CTkButton(edit_window, text=_("Cancelar"), command=edit_window.destroy, width=BUTTON_WIDTH)
             btn_cancel.grid(row=row+1, column=1, padx=10, pady=10)
 
             def on_close_edit():
@@ -554,9 +713,9 @@ class EggsMakerApp:
             if os.path.exists("/home/eggs"):
                 cmd = f"echo {self.password} | sudo -S rm -rf /home/eggs"
                 subprocess.run(cmd, shell=True, check=True)
-                messagebox.showinfo("Limpieza", "Se eliminaran los archivos temporales")
+                messagebox.showinfo(_("Limpieza"), _("Se eliminaran los archivos temporales"))
         except Exception as e:
-            messagebox.showerror("Error", f"Error al eliminar archivos temporales: {str(e)}")
+            messagebox.showerror(_("Error"), _("Error al eliminar archivos temporales: {str(e)}"))
         finally:
             self.root.destroy()
 
@@ -564,20 +723,55 @@ class EggsMakerApp:
     def show_info(self):
         info_win = ctk.CTkToplevel(self.root)
         info_win.title("Información")
-        info_win.update_idletasks()
-        x = (info_win.winfo_screenwidth() - info_win.winfo_reqwidth()) // 2
-        y = (info_win.winfo_screenheight() - info_win.winfo_reqheight()) // 2
-        info_win.geometry(f"+{x}+{y}")
-        bold_font = ctk.CTkFont(family="Arial", size=12, weight="bold")
+        info_win.configure(bg=self.color_bg)
+        info_win.geometry("460x200")
+        bold_font = ctk.CTkFont(family="Segoe UI", size=13, weight="bold")
         info_text = (
             "Eggsmaker creado por Jorge Luis Endres (c) 2025 Argentina\n"
             "Penguins Eggs creado por Piero Proietti\n\n"
             "Para más información, visita:\nhttps://penguins-eggs.net"
         )
-        info_label = ctk.CTkLabel(info_win, text=info_text, font=bold_font, justify="center")
+        info_label = ctk.CTkLabel(info_win, text=info_text, font=bold_font, justify="center", text_color=self.color_orange)
         info_label.pack(expand=True, fill="both", padx=20, pady=20)
         info_win.grab_set()
         info_win.focus_force()
+
+    def show_custom_info(self, title, message):
+        dialog = ctk.CTkToplevel(self.root)
+        dialog.title(title)
+        dialog.geometry("400x180")
+        dialog.configure(bg=self.color_bg)
+        dialog.grab_set()
+        dialog.focus_force()
+        dialog.resizable(False, False)
+
+        label = ctk.CTkLabel(dialog, text=message, font=self.font_label, text_color=self.color_orange, wraplength=360, justify="center")
+        label.pack(pady=(30, 20), padx=20)
+
+        btn = ctk.CTkButton(dialog, text=_("Aceptar"), command=dialog.destroy, width=100, font=self.font_button, fg_color=self.color_button, hover_color=self.color_button_hover, corner_radius=8)
+        btn.pack(pady=10)
+
+        dialog.protocol("WM_DELETE_WINDOW", dialog.destroy)
+        self.root.wait_window(dialog)
+
+    def show_custom_error(self, title, message):
+        dialog = ctk.CTkToplevel(self.root)
+        dialog.title(title)
+        dialog.geometry("400x180")
+        dialog.configure(bg=self.color_bg)
+        dialog.focus_force()
+        dialog.resizable(False, False)
+
+        label = ctk.CTkLabel(dialog, text=message, font=self.font_label, text_color=self.color_error, wraplength=360, justify="center")
+        label.pack(pady=(30, 20), padx=20)
+
+        btn = ctk.CTkButton(dialog, text=_("Aceptar"), command=dialog.destroy, width=100, font=self.font_button, fg_color="#ff052b", hover_color="#a8001a", corner_radius=8)
+        btn.pack(pady=10)
+
+        dialog.protocol("WM_DELETE_WINDOW", dialog.destroy)
+        dialog.wait_visibility()
+        dialog.grab_set()
+        self.root.wait_window(dialog)
 
 if __name__ == "__main__":
     root = ctk.CTk()

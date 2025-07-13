@@ -1,0 +1,27 @@
+   debian
+
+  nuitka --onefile \
+  --enable-plugin=tk-inter \
+  --include-data-dir=/usr/lib/python3/dist-packages/customtkinter=customtkinter \
+  --include-data-dir=./assets=assets \
+  --include-data-dir=./locales=locales \
+  --include-package=PIL \
+  --include-package=gettext \
+  --follow-imports \
+  eggsmaker.py
+
+  arch
+
+  nuitka --onefile \
+  --enable-plugin=tk-inter \
+  --include-data-dir=/usr/lib/python3.13/site-packages/customtkinter=customtkinter \
+  --include-data-dir=./assets=assets \
+  --include-data-dir=./locales=locales \
+  --include-package=PIL \
+  --include-package=gettext \
+  --follow-imports \
+  eggsmaker.py
+
+
+
+
