@@ -1,6 +1,5 @@
 #!/bin/bash 
-source bin/program
-cd ~/${PROGRAM}
+PROGRAM="eggsmaker"
 
 # Set the program version
 source src/version.py
