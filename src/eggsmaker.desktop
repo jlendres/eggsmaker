@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Eggsmaker
+Exec=eggsmaker
+Icon=eggsmaker
+Comment=Herramienta de automatización y empaquetado
+Categories=Development;Utility;
+Terminal=false
